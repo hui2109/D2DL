@@ -2,4 +2,4 @@
 
 Hui's dive into deep learning
 
-基于Python 3.13
+基于Python 3.9.10
