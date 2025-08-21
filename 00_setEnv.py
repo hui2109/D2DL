@@ -1,24 +1,39 @@
 import sys
 import subprocess
+import json
+
+commonCmd = [sys.executable, '-m', 'pip', 'install',
+             'setuptools',
+             'd2l',
+             ]
 
 
-def getCmd(hasGPU=False):
-    cmd = [sys.executable, '-m', 'pip', 'install',
-           'setuptools',
-           'd2l',
-           ]
-    if hasGPU:
-        cmd.append('torch')
-        cmd.append('torchvision')
-        cmd.append('--index-url')
-        cmd.append('https://download.pytorch.org/whl/cu129')
+def installPackages():
+    with open('./localConfig.json', 'r', 1, 'utf-8') as f:
+        localConfig = json.load(f)
+
+    print(f'commonCmd 代码指令是: {" ".join(commonCmd)}')
+    print('=' * 100)
+    subprocess.run(commonCmd, check=True)
+    print('=' * 100)
+
+    if localConfig['hasGPU']:
+        torchCmd = [sys.executable, '-m', 'pip', 'install',
+                    'torch',
+                    'torchvision',
+                    '--index-url',
+                    'https://download.pytorch.org/whl/cu129',
+                    ]
     else:
-        cmd.append('torch')
-        cmd.append('torchvision')
-    return cmd
+        torchCmd = [sys.executable, '-m', 'pip', 'install',
+                    'torch',
+                    'torchvision',
+                    ]
+
+    print(f'torchCmd 代码指令是: {" ".join(torchCmd)}')
+    print('=' * 100)
+    subprocess.run(torchCmd, check=True)
 
 
-cmd = getCmd(False)
-print(f'代码指令是: {" ".join(cmd)}')
-print('=' * 100)
-subprocess.run(cmd, check=True)
+if __name__ == '__main__':
+    installPackages()
