@@ -2,6 +2,8 @@ import sys
 import subprocess
 import json
 
+# pip config set global.extra-index-url "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple https://mirrors.aliyun.com/pypi/simple/"
+
 commonCmd = [sys.executable, '-m', 'pip', 'install',
              'setuptools',
              'd2l',
