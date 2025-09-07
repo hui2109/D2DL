@@ -1,19 +1,23 @@
-import os
+def train_concise(wd):
+    net = nn.Sequential(nn.Linear(num_inputs, 1))
+    for param in net.parameters():
+        param.data.normal_()
+    loss = nn.MSELoss(reduction='none')
+    num_epochs, lr = 100, 0.003
 
-os.makedirs(os.path.join('..', 'data'), exist_ok=True)
-data_file = os.path.join('..', 'data', 'house_tiny.csv')
-with open(data_file, 'w') as f:
-    f.write('NumRooms,Alley,Price\n')  # 列名
-    f.write('NA,Pave,127500\n')  # 每行表示一个数据样本
-    f.write('2,NA,106000\n')
-    f.write('4,NA,178100\n')
-    f.write('NA,NA,140000\n')
+    trainer = torch.optim.SGD([
+        {"params": net[0].weight, 'weight_dacay': wd},
+        {"params": net[0].bias}
+    ], lr=lr)
+    animator = d2l.Animator(xlabel='epochs', ylabel='loss', yscale='log', xlim=[5, num_epochs], legend=['train', 'test'])
 
-import pandas as pd
+    for epoch in range(num_epochs):
+        for X, y in train_iter:
+            trainer.zero_grad()
+            l = loss(net(X), y)
+            l.mean().backward()
+            trainer.step()
 
-data = pd.read_csv(data_file)
-print(data)
-
-inputs, outputs = data.iloc[:, 0:2], data.iloc[:, 2]
-inputs = inputs.fillna(inputs.mean())
-print(inputs)
+        if (epoch + 1) % 5 == 0:
+            animator.add(epoch + 1, [d2l.evaluate_loss(net, train_iter, loss), d2l.evaluate_loss(net, test_iter, loss)])
+    print(f'w的L2范数是: {net[0].weight.norm().item()}')
