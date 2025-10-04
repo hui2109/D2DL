@@ -3525,17 +3525,18 @@ def grad_clipping(net, theta):
 d2l.DATA_HUB['fra-eng'] = (d2l.DATA_URL + 'fra-eng.zip',
                            '94646ad1522d915e7b0f9296181140edcf86a4f5')
 
-d2l.DATA_HUB['kaggle_house_train'] = (  #@save
+d2l.DATA_HUB['kaggle_house_train'] = (  # @save
     DATA_URL + 'kaggle_house_pred_train.csv',
     '585e9cc93e70b39160e7921475f9bcd7d31219ce')
 
-d2l.DATA_HUB['kaggle_house_test'] = (  #@save
+d2l.DATA_HUB['kaggle_house_test'] = (  # @save
     DATA_URL + 'kaggle_house_pred_test.csv',
     'fa19780a7b011d9b009e8bff8e99922a8ee2eb90')
 
-#@save
+# @save
 d2l.DATA_HUB['time_machine'] = (d2l.DATA_URL + 'timemachine.txt',
                                 '090b5e7e70c295757f55df93cb0a180b9691891a')
+
 
 def read_data_nmt():
     """Load the English-French dataset.
@@ -3780,12 +3781,24 @@ def predict_ch3(net, test_iter, n=6):  # @save
         X[0:n].reshape((n, 28, 28)), 1, n, titles=titles[0:n])
 
 
-def read_time_machine():  #@save
+def read_time_machine():  # @save
     """将时间机器数据集加载到文本行的列表中"""
     with open(d2l.download('time_machine'), 'r') as f:
         lines = f.readlines()
     return [re.sub('[^A-Za-z]+', ' ', line).strip().lower() for line in lines]
 
+
+def load_corpus_time_machine(max_tokens=-1):  # @save
+    """返回时光机器数据集的词元索引列表和词表"""
+    lines = read_time_machine()
+    tokens = tokenize(lines, 'char')
+    vocab = Vocab(tokens)
+    # 因为时光机器数据集中的每个文本行不一定是一个句子或一个段落，
+    # 所以将所有文本行展平到一个列表中
+    corpus = [vocab[token] for line in tokens for token in line]
+    if max_tokens > 0:
+        corpus = corpus[:max_tokens]
+    return corpus, vocab
 
 
 # Alias defined in config.ini
